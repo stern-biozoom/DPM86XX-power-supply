@@ -17,7 +17,7 @@ class TestDPM86XX(TestCase):
         for address in range(1, 100):
             for function in ['r', 'w']:
                 for function_member in range(0, 100):
-                    for operand in [random.randint(0,65536) for _ in range(100)]:
+                    for operand in [random.randint(0, 65536) for _ in range(100)]:
                         self.assertRegex(
                             self.dpm.make_command(address, function, function_member, operand),
                             # Assert format of regular command
@@ -25,18 +25,18 @@ class TestDPM86XX(TestCase):
                         )
         # Test second operand format
         self.assertRegex(
-            self.dpm.make_command(1, 'r', 1, 12345,12345),
+            self.dpm.make_command(1, 'r', 1, 12345, 12345),
             ':\\d\\d[rw]\\d\\d=\\d{1,5},\\d{1,5},\r\n'.encode()
         )
         with self.assertRaises(ValueError):
             # Address out of range
-            self.dpm.make_command(0, 'w',1,1234)
+            self.dpm.make_command(0, 'w', 1, 1234)
         with self.assertRaises(ValueError):
             # function member out of range
-            self.dpm.make_command(0, 'w',100,1234)
+            self.dpm.make_command(0, 'w', 100, 1234)
         with self.assertRaises(ValueError):
             # operand out of range
-            self.dpm.make_command(0, 'w',100,123456)
+            self.dpm.make_command(0, 'w', 100, 123456)
 
     def test_make_write_voltage_command(self):
         self.assertEqual(self.dpm.make_write_voltage_command(1, 1234), b':01w10=1234,\r\n')

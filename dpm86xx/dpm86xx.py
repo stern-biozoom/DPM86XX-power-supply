@@ -153,7 +153,6 @@ class DPM86XX:
             raise ValueError('Current must be in the range of 0.000 to 24.000 A')
         return cls.make_command(address, 'w', 20, voltage, current)
 
-
     @classmethod
     def make_read_maximum_output_voltage_command(cls, address: int) -> bytes:
         """
@@ -164,8 +163,7 @@ class DPM86XX:
         :return: Encoded command to read the maximum output voltage.
         :rtype: bytes
         """
-        return cls.make_command(address, 'r',0, 0)
-
+        return cls.make_command(address, 'r', 0, 0)
 
     @classmethod
     def make_read_maximum_output_current_command(cls, address: int) -> bytes:
@@ -177,7 +175,7 @@ class DPM86XX:
         :return: Encoded command to read the maximum output current.
         :rtype: bytes
         """
-        return cls.make_command(address, 'r',1, 0)
+        return cls.make_command(address, 'r', 1, 0)
 
     @classmethod
     def make_read_voltage_setting_command(cls, address: int) -> bytes:
@@ -189,7 +187,7 @@ class DPM86XX:
         :return: Encoded command to read the voltage setting.
         :rtype: bytes
         """
-        return cls.make_command(address, 'r',10, 0)
+        return cls.make_command(address, 'r', 10, 0)
 
     @classmethod
     def make_read_current_setting_command(cls, address: int) -> bytes:
@@ -201,7 +199,7 @@ class DPM86XX:
         :return: Encoded command to read the current setting.
         :rtype: bytes
         """
-        return cls.make_command(address, 'r',11, 0)
+        return cls.make_command(address, 'r', 11, 0)
 
     @classmethod
     def make_read_output_status_command(cls, address: int) -> bytes:
@@ -213,7 +211,7 @@ class DPM86XX:
         :return: Encoded command to read the output status (on/off).
         :rtype: bytes
         """
-        return cls.make_command(address, 'r',12, 0)
+        return cls.make_command(address, 'r', 12, 0)
 
     @classmethod
     def make_read_actual_voltage_command(cls, address: int) -> bytes:
@@ -225,7 +223,7 @@ class DPM86XX:
         :return: Encoded command to read the actual output voltage.
         :rtype: bytes
         """
-        return cls.make_command(address, 'r',30, 0)
+        return cls.make_command(address, 'r', 30, 0)
 
     @classmethod
     def make_read_actual_current_command(cls, address: int) -> bytes:
@@ -237,7 +235,7 @@ class DPM86XX:
         :return: Encoded command to read the actual output current.
         :rtype: bytes
         """
-        return cls.make_command(address, 'r',31, 0)
+        return cls.make_command(address, 'r', 31, 0)
 
     @classmethod
     def make_read_cc_cv_status_command(cls, address: int) -> bytes:
@@ -249,7 +247,7 @@ class DPM86XX:
         :return: Encoded command to read the CC/CV status.
         :rtype: bytes
         """
-        return cls.make_command(address, 'r',32, 0)
+        return cls.make_command(address, 'r', 32, 0)
 
     @classmethod
     def make_read_temperature_command(cls, address: int) -> bytes:
@@ -261,5 +259,5 @@ class DPM86XX:
         :return: A byte string representing the formatted command to read the device's internal temperature.
         :rtype: bytes
         """
-        return cls.make_command(address, 'r',33, 0)
+        return cls.make_command(address, 'r', 33, 0)
 
