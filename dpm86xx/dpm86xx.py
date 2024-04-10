@@ -282,7 +282,7 @@ class DPM86XX:
             return
         self._port = serial.Serial(port, baud)
 
-    def read_temperature(self) -> int:
+    def get_temperature(self) -> int:
         """
         Reads the temperature from the device.
 
@@ -361,7 +361,7 @@ class DPM86XX:
         # command was successful, but only if the command was received.
         return response == b':01ok\r\n'
 
-    def read_actual_voltage_in_centivolts(self) -> int:
+    def get_actual_voltage_in_centivolts(self) -> int:
         """
         Reads the actual voltage level from the device, returning the value in centivolts.
 
@@ -385,7 +385,7 @@ class DPM86XX:
         result = int(response[7:-3])  # may raise ValueError
         return result
 
-    def read_actual_voltage(self) -> float:
+    def get_actual_voltage(self) -> float:
         """
         Reads the actual voltage level from the device, converting the result to volts.
 
@@ -399,9 +399,9 @@ class DPM86XX:
                  or corrupted data.
         :raises ValueError: If converting the response to an integer fails, indicating an invalid response format.
         """
-        return self.read_actual_voltage_in_centivolts() / 100.0
+        return self.get_actual_voltage_in_centivolts() / 100.0
 
-    def write_output_status(self, status) -> bool:
+    def set_output_status(self, status) -> bool:
         """
         Sends a command to the device to set the output status (on/off).
 
@@ -423,7 +423,7 @@ class DPM86XX:
         # command was successful, but only if the command was received.
         return response == b':01ok\r\n'
 
-    def read_output_status(self) -> bool:
+    def get_output_status(self) -> bool:
         """
         Queries the device for its output status (on/off).
 
@@ -519,7 +519,7 @@ class DPM86XX:
         # command was successful, but only if the command was received.
         return response == b':01ok\r\n'
 
-    def read_actual_current_in_milliamperes(self) -> int:
+    def get_actual_current_in_milliamperes(self) -> int:
         """
         Reads the actual current output from the device, returning the value in milliamperes.
 
@@ -542,7 +542,7 @@ class DPM86XX:
         result = int(response[7:-3])  # may raise ValueError
         return result
 
-    def read_actual_current(self) -> float:
+    def get_actual_current(self) -> float:
         """
         Reads the actual current output from the device, converting the result to amperes.
 
@@ -555,9 +555,9 @@ class DPM86XX:
         :raises IOError: If the device's response is shorter than expected, indicating incomplete or corrupted data.
         :raises ValueError: If converting the response to an integer fails, suggesting an invalid response format.
         """
-        return self.read_actual_current_in_milliamperes() / 1000.0
+        return self.get_actual_current_in_milliamperes() / 1000.0
 
-    def read_cc_cv_status(self) -> bool:
+    def get_cc_cv_status(self) -> bool:
         """
         Reads the device's current operational mode to determine if it is in Constant Voltage (CV) mode.
 
@@ -596,7 +596,7 @@ class DPM86XX:
         :raises ValueError: If there is an issue converting the response to an integer, suggesting an invalid response
                 format.
         """
-        return self.read_cc_cv_status()
+        return self.get_cc_cv_status()
 
     def is_in_cc_mode(self) -> bool:
         """
@@ -613,4 +613,4 @@ class DPM86XX:
         :raises ValueError: If there is an issue converting the response to an integer, suggesting an invalid response
                 format.
         """
-        return not self.read_cc_cv_status()
+        return not self.get_cc_cv_status()
