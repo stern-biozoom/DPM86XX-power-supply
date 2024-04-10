@@ -17,7 +17,7 @@ setup(
     long_description=readme,
     author='biozoom services GmbH',
     author_email='stern@biozoom.net',
-    url='https://example.com/',  # TODO use correct URL
+    url='https://biozoom.net/',
     license=license,
     packages=find_packages(exclude=('tests', 'docs'))
 )
