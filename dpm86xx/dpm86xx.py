@@ -6,7 +6,7 @@ from typing import Union, Literal
 class DPM86XX:
     def __init__(self, com_port=None, address=1, baud=9600):
         if com_port is not None:
-            self._port = serial.Serial(com_port, baudrate=baud)
+            self._port = serial.Serial(com_port, baudrate=baud, timeout=2)
         self._address = address
 
     @staticmethod
