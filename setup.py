@@ -12,7 +12,7 @@ with open('LICENSE') as f:
 
 setup(
     name='dpm86xx',
-    version='0.1.0',
+    version='0.1.1',
     description='Python package to control Joy-IT DPM86XX power supplys.',
     long_description=readme,
     author='biozoom services GmbH',
