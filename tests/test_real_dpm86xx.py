@@ -53,6 +53,26 @@ class TestRealDPM86XX(TestCase):
                 time.sleep(0.3)  # Extra delay for retrying
             time.sleep(0.3)  # Short delay to observe changes
 
+    def test_ensure_current_setting(self):
+        # Test to sequentially set different current limit levels
+        self.dpm.set_output_status(0)  # Ensure output is off before setting current limit
+        for current in range(0, 501, 100):
+            while not self.dpm.ensure_current_setting(current):
+                print('Could not ensure current setting. External retry.')
+                time.sleep(0.3)  # Extra delay for retrying
+            time.sleep(0.3)  # Short delay to observe changes
+
+    def test_set_and_get_current(self):
+        # Test to set and get the current limit, which was set before
+        self.dpm.set_output_status(0)  # Ensure output is off before setting current limit
+        for current in range(0, 501, 100):
+            self.dpm.set_current_in_milliampere(current)
+            read_current_limit = self.dpm.get_current()
+            print(f'Current set: {current}mA, current read: {read_current_limit * 1000}mA')
+            if abs((read_current_limit * 1000.0) - current) > 0.01:
+                self.fail('Could not set current limit.')
+            time.sleep(0.3)  # Short delay to observe changes
+
     def test_set_and_get_voltage(self):
         # Test to set and get the voltage, which was set before
         self.dpm.set_output_status(0)  # Ensure output is off before setting voltages

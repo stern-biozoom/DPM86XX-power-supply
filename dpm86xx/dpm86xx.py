@@ -562,6 +562,72 @@ class DPM86XX:
         current_in_milliampere = int(current * 1000)  # may raise ValueError
         return self.set_current_in_milliampere(current_in_milliampere)
 
+    def get_current_in_milliampere(self) -> int:
+        """
+        Reads the current setting from the device, returning the value in milliamperes.
+
+        Sends a command to the device to query its current limit level. The method checks for the
+        configured communication port before issuing the command. Parses the device's response to extract
+        the current limit level in milliamperes.
+
+        :return: The current limit from the device, in milliamperes.
+        :rtype: int
+        :raises AssertionError: If the communication port has not been configured.
+        :raises IOError: If the device's response is shorter than expected, indicating incomplete or corrupted data.
+        :raises ValueError: If converting the response to an integer fails, suggesting an invalid response format.
+        """
+        assert self._port is not None
+        command = self.make_read_current_setting_command(self._address)
+        self._port.write(command)
+        response = self._port.read_until(b'\r\n')
+        if len(response) < 11:
+            raise IOError(f'Response is too short: {response}')
+        result = int(response[7:-3])  # may raise ValueError
+        return result
+
+    def get_current(self) -> float:
+        """
+        Reads the current setting from the device, returning the value in amperes.
+
+        Sends a command to the device to query its current limit level. The method checks for the
+        configured communication port before issuing the command. Parses the device's response to extract
+        the current limit level in milliamperes. The result is then converted into amperes.
+
+        :return: The current limit from the device, in amperes.
+        :rtype: float
+        :raises AssertionError: If the communication port has not been configured.
+        :raises IOError: If the device's response is shorter than expected, indicating incomplete or corrupted data.
+        :raises ValueError: If converting the response to an integer fails, suggesting an invalid response format.
+        """
+        return self.get_current_in_milliampere() / 1000.0
+
+    def ensure_current_setting(self, current_in_milliampere: int, retries: int = 3) -> bool:
+        """
+        Attempts to set the current limit to a specified level and verifies if the setting was applied successfully.
+
+        This method sets the desired current limit on the device multiple times (up to the specified number of retries)
+        and checks after each attempt to see if the current limit has been correctly set. The current limit value is
+        to be provided in milliamperes. If the read back current limit matches the desired current limit
+        after any attempt, the method returns True, indicating success. If all attempts fail, it returns False.
+
+        :param current_in_milliampere: The desired current limit level to set, specified in milliamperes.
+        :type current_in_milliampere: int
+        :param retries: The number of attempts to try setting the voltage before giving up. Default is 3.
+        :type retries: int
+        :return: True if the current limit setting is successfully verified within the given number of retries, False otherwise.
+        :rtype: bool
+        :raises AssertionError: If the communication port has not been configured.
+        :raises IOError: If the response from the device is shorter than expected, suggesting incomplete
+                         or corrupted data.
+        :raises ValueError: If converting the response to an integer fails, indicating an invalid response format.
+        """
+        while retries > 0:
+            self.set_current_in_milliampere(current_in_milliampere)
+            if self.get_current_in_milliampere() == current_in_milliampere:
+                return True
+            retries -= 1
+        return False
+
     def set_voltage_and_current(self, voltage: Union[float, int], current: Union[float, int]) -> bool:
         """
         Sends a command to set both the voltage and current levels on the device.
