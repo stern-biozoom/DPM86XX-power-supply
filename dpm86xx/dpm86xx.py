@@ -518,6 +518,37 @@ class DPM86XX:
         result = int(response[7:-3])  # may raise ValueError
         return result == 1
 
+    def ensure_output_status(self, status: Union[bool,int], retries: int = 3) -> bool:
+        """
+        Attempts to set the output status to a specified status and verifies if the setting was applied successfully.
+
+        This method sets the desired output status on the device multiple times (up to the specified number of retries)
+        and checks after each attempt to see if the output status has been correctly set. If the read back output status
+        matches the desired status after any attempt, the method returns True, indicating success. If all attempts fail,
+        it returns False.
+
+        :param status: The desired output status to set.
+        :type status: bool or int
+        :param retries: The number of attempts to try setting the voltage before giving up. Default is 3.
+        :type retries: int
+        :return: True if the output status setting is successfully verified within the given number of retries, False otherwise.
+        :rtype: bool
+        :raises AssertionError: If the communication port has not been configured.
+        :raises IOError: If the device's response is shorter than expected, suggesting that the data received is
+                incomplete or corrupted.
+        :raises ValueError: If converting the relevant portion of the response to an integer is unsuccessful,
+                indicating an invalid response format.
+        """
+        # Ensure status to be boolean
+        if type(status) is int:
+            status = not status == 0
+        while retries > 0:
+            self.set_output_status(status)
+            if self.get_output_status() == status:
+                return True
+            retries -= 1
+        return False
+
     def set_current_in_milliampere(self, current_in_milliampere: int) -> bool:
         """
         Sends a command to set the device's current level, specified in milliamperes.
