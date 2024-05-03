@@ -62,6 +62,22 @@ class TestRealDPM86XX(TestCase):
                 time.sleep(0.3)  # Extra delay for retrying
             time.sleep(0.3)  # Short delay to observe changes
 
+    def test_ensure_output_status_setting(self):
+        if self.dpm.ensure_output_status(0):
+            print('Setting output status to off was successful.')
+        else:
+            self.fail('Setting output status failed.')
+        time.sleep(0.5)
+        if self.dpm.ensure_output_status(1):
+            print('Setting output status to on was successful.')
+        else:
+            self.fail('Setting output status failed.')
+        time.sleep(0.5)
+        if self.dpm.ensure_output_status(0):
+            print('Setting output status to off was successful.')
+        else:
+            self.fail('Setting output status failed.')
+
     def test_set_and_get_current(self):
         # Test to set and get the current limit, which was set before
         self.dpm.set_output_status(0)  # Ensure output is off before setting current limit
