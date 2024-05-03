@@ -361,6 +361,76 @@ class DPM86XX:
         # command was successful, but only if the command was received.
         return response == b':01ok\r\n'
 
+    def get_voltage_in_centivolts(self) -> int:
+        """
+        Reads the voltage setting from the device, leaving the result in centivolts.
+
+        Sends a command to read the current voltage setting from the device and parses the response to extract
+        the voltage value in centivolts. The function checks if the communication port is configured before issuing the
+        command and handles potential errors during data retrieval and conversion.
+
+        :return: The voltage setting of the device in centivolts.
+        :rtype: float
+        :raises AssertionError: If the communication port has not been configured.
+        :raises IOError: If the response from the device is shorter than expected, suggesting incomplete
+                         or corrupted data.
+        :raises ValueError: If converting the response to an integer fails, indicating an invalid response format.
+        """
+        assert self._port is not None
+        command = self.make_read_voltage_setting_command(self._address)
+        self._port.write(command)
+        response = self._port.read_until(b'\r\n')
+        if len(response) < 11:
+            raise IOError(f'Response is too short: {response}')
+        result = int(response[7:-3])  # may raise ValueError
+        return result
+
+    def get_voltage(self) -> float:
+        """
+        Reads the voltage setting from the device, converting the result from centivolts to volts.
+
+        Sends a command to read the current voltage setting from the device and parses the response to extract
+        the voltage value in centivolts. It then converts this value to volts for easier interpretation.
+        The function checks if the communication port is configured before issuing the command and handles potential
+        errors during data retrieval and conversion.
+
+        :return: The voltage setting of the device, converted to volts.
+        :rtype: float
+        :raises AssertionError: If the communication port has not been configured.
+        :raises IOError: If the response from the device is shorter than expected, suggesting incomplete
+                         or corrupted data.
+        :raises ValueError: If converting the response to an integer fails, indicating an invalid response format.
+        """
+        return self.get_voltage_in_centivolts() / 100.0
+
+    def ensure_voltage_setting(self, voltage: float, retries: int = 3) -> bool:
+        """
+        Attempts to set the voltage to a specified level and verifies if the setting was applied successfully.
+
+        This method sets the desired voltage on the device multiple times (up to the specified number of retries)
+        and checks after each attempt to see if the voltage has been correctly set. The voltage value is provided in volts
+        and internally converted to centivolts for command transmission. If the set voltage matches the desired voltage
+        after any attempt, the method returns True, indicating success. If all attempts fail, it returns False.
+
+        :param voltage: The desired voltage level to set, specified in volts.
+        :type voltage: float
+        :param retries: The number of attempts to try setting the voltage before giving up. Default is 3.
+        :type retries: int
+        :return: True if the voltage setting is successfully verified within the given number of retries, False otherwise.
+        :rtype: bool
+        :raises AssertionError: If the communication port has not been configured.
+        :raises IOError: If the response from the device is shorter than expected, suggesting incomplete
+                         or corrupted data.
+        :raises ValueError: If converting the response to an integer fails, indicating an invalid response format.
+        """
+        centivolts = int(voltage * 100)  # Convert volts to centivolts for setting.
+        while retries > 0:
+            self.set_voltage_in_centivolts(centivolts)
+            if self.get_voltage_in_centivolts() == centivolts:
+                return True
+            retries -= 1
+        return False
+
     def get_actual_voltage_in_centivolts(self) -> int:
         """
         Reads the actual voltage level from the device, returning the value in centivolts.

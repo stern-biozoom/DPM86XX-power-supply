@@ -44,6 +44,24 @@ class TestRealDPM86XX(TestCase):
             self.dpm.set_voltage_in_centivolts(voltage)
             time.sleep(0.3)  # Short delay to observe changes
 
+    def test_ensure_voltage_setting(self):
+        # Test to sequentially set different voltage levels
+        self.dpm.set_output_status(0)  # Ensure output is off before setting voltages
+        for voltage in range(0, 501, 100):
+            while not self.dpm.ensure_voltage_setting(voltage / 100.0):
+                print('Could not ensure voltage setting. External retry.')
+                time.sleep(0.3)  # Extra delay for retrying
+            time.sleep(0.3)  # Short delay to observe changes
+
+    def test_set_and_get_voltage(self):
+        # Test to set and get the voltage, which was set before
+        self.dpm.set_output_status(0)  # Ensure output is off before setting voltages
+        for voltage in range(0, 501, 100):
+            self.dpm.set_voltage_in_centivolts(voltage)
+            read_voltage = self.dpm.get_voltage()
+            print(f'Voltage set: {voltage / 100.0}V, voltage read: {read_voltage}V')
+            time.sleep(0.3)  # Short delay to observe changes
+
     def test_set_current(self):
         # Test to sequentially set different current levels in milliamperes and amperes
         self.dpm.set_output_status(0)  # Start with the output disabled
