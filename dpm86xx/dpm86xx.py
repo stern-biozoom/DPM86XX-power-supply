@@ -312,7 +312,7 @@ class DPM86XX:
         Sends a command to set the device's voltage level, specified in centivolts.
 
         Before sending the command, it checks that the communication port is configured. The acknowledgment
-        from the device, indicated by b':01ok\r\n', means the command was received in the correct format.
+        from the device, indicated by b':AAok\r\n' (AA being the address), means the command was received in the correct format.
         It's important to note that this response does not confirm the successful execution of the command,
         but rather the correct reception.
 
@@ -326,7 +326,7 @@ class DPM86XX:
         command = self.make_write_voltage_command(self._address, voltage_in_centivolts)
         self._port.write(command)
         response = self._port.read_until(b'\r\n')
-        # The device always responses with b':01ok\r\n'. This does only mean the device received
+        # The device always responses with b':AAok\r\n' (AA being the address). This does only mean the device received
         # a command-like byte string, disregarding its actual content. Thus, we cannot tell if the
         # command was successful, but only if the command was received.
         return response == f':{self._address:02d}ok\r\n'.encode()
@@ -337,13 +337,13 @@ class DPM86XX:
 
         Validates the input voltage to ensure it is a float, converting if necessary, before generating
         and sending the command to the device. Ensures that the communication port is available before
-        proceeding. The device's response, b':01ok\r\n', signifies that the command was received. It's
+        proceeding. The device's response, b':AAok\r\n' (AA being the address), signifies that the command was received. It's
         important to note that this response does not indicate the successful execution of the command,
         but rather the correct format of the received command.
 
         :param voltage: The desired voltage level to set on the device, in volts.
         :type voltage: float
-        :return: True if the device acknowledges receipt of the command with b':01ok\r\n', indicating
+        :return: True if the device acknowledges receipt of the command with b':AAok\r\n' (AA being the address), indicating
                  the command was received in the correct format but not necessarily executed as intended.
         :rtype: bool
         :raises AssertionError: If the communication port has not been configured.
@@ -356,7 +356,7 @@ class DPM86XX:
         command = self.make_write_voltage_command(self._address, voltage)
         self._port.write(command)
         response = self._port.read_until(b'\r\n')
-        # The device always responses with b':01ok\r\n'. This does only mean the device received
+        # The device always responses with b':AAok\r\n' (AA being the address). This does only mean the device received
         # a command-like byte string, disregarding its actual content. Thus, we cannot tell if the
         # command was successful, but only if the command was received.
         return response == f':{self._address:02d}ok\r\n'.encode()
@@ -476,11 +476,11 @@ class DPM86XX:
         Sends a command to the device to set the output status (on/off).
 
         Ensures the communication port is configured before sending the command. The device's acknowledgment,
-        b':01ok\r\n', only indicates that the command was received in the correct format and does not guarantee
+        b':AAok\r\n' (AA being the address), only indicates that the command was received in the correct format and does not guarantee
         the command's successful execution.
 
         :param status: The desired output status; True to enable or False to disable the output.
-        :return: True if the device acknowledges receipt of the command with b':01ok\r\n', indicating
+        :return: True if the device acknowledges receipt of the command with b':AAok\r\n' (AA being the address), indicating
                  the command was received. It does not ensure the command was executed as intended.
         :raises AssertionError: If the communication port has not been configured.
         """
@@ -488,7 +488,7 @@ class DPM86XX:
         command = self.make_write_output_status_command(self._address, status)
         self._port.write(command)
         response = self._port.read_until(b'\r\n')
-        # The device always responses with b':01ok\r\n'. This does only mean the device received
+        # The device always responses with b':AAok\r\n' (AA being the address). This does only mean the device received
         # a command-like byte string, disregarding its actual content. Thus, we cannot tell if the
         # command was successful, but only if the command was received.
         return response == f':{self._address:02d}ok\r\n'.encode()
@@ -554,13 +554,13 @@ class DPM86XX:
         Sends a command to set the device's current level, specified in milliamperes.
 
         Before issuing the command, it verifies that the communication port is properly configured.
-        The device's acknowledgment, indicated by b':01ok\r\n', confirms the receipt of the command in
+        The device's acknowledgment, indicated by b':AAok\r\n' (AA being the address), confirms the receipt of the command in
         the correct format. This acknowledgment does not, however, verify the successful execution of the
         command, merely the reception of a command structured correctly.
 
         :param current_in_milliampere: The desired current level to set on the device, specified in milliamperes.
         :type current_in_milliampere: int
-        :return: True if the device acknowledges receipt of the command with b':01ok\r\n', signifying
+        :return: True if the device acknowledges receipt of the command with b':AAok\r\n' (AA being the address), signifying
                  that the command was received. It does not ascertain the command's successful execution.
         :raises AssertionError: If the communication port has not been configured.
         """
@@ -568,7 +568,7 @@ class DPM86XX:
         command = self.make_write_current_command(self._address, current_in_milliampere)
         self._port.write(command)
         response = self._port.read_until(b'\r\n')
-        # The device always responses with b':01ok\r\n'. This does only mean the device received
+        # The device always responses with b':AAok\r\n' (AA being the address). This does only mean the device received
         # a command-like byte string, disregarding its actual content. Thus, we cannot tell if the
         # command was successful, but only if the command was received.
         return response == f':{self._address:02d}ok\r\n'.encode()
@@ -585,7 +585,7 @@ class DPM86XX:
 
         :param current: The desired current level to set on the device, specified in amperes.
         :type current: float
-        :return: True if the device acknowledges receipt of the command with b':01ok\r\n', indicating
+        :return: True if the device acknowledges receipt of the command with b':AAok\r\n' (AA being the address), indicating
                  the command was received. This does not guarantee the command's successful execution.
         :raises AssertionError: If the communication port has not been configured.
         :raises ValueError: If the current value cannot be converted to an integer.
@@ -665,14 +665,14 @@ class DPM86XX:
 
         This method constructs and sends a command to simultaneously set the voltage and current levels of the device.
         It accommodates both float and integer inputs for voltage and current, with integers being treated as centivolts
-        and milliamperes respectively. It's crucial to note that the device's acknowledgment (b':01ok\r\n') only
+        and milliamperes respectively. It's crucial to note that the device's acknowledgment (b':AAok\r\n' (AA being the address)) only
         confirms the receipt of a well-formed command, not the successful application of the settings.
 
         :param voltage: The voltage level to set, in volts if a float, or centivolts if an integer.
         :type voltage: Union[float, int]
         :param current: The current level to set, in amperes if a float, or milliamperes if an integer.
         :type current: Union[float, int]
-        :return: True if the device acknowledges receipt of the command with b':01ok\r\n', indicating the command
+        :return: True if the device acknowledges receipt of the command with b':AAok\r\n' (AA being the address), indicating the command
                  was received in the correct format. This does not confirm the successful execution of the command.
         :raises AssertionError: If the communication port has not been configured.
         """
@@ -681,7 +681,7 @@ class DPM86XX:
         command = self.make_write_voltage_and_current_command(self._address, voltage, current)
         self._port.write(command)
         response = self._port.read_until(b'\r\n')
-        # The device always responses with b':01ok\r\n'. This does only mean the device received
+        # The device always responses with b':AAok\r\n' (AA being the address). This does only mean the device received
         # a command-like byte string, disregarding its actual content. Thus, we cannot tell if the
         # command was successful, but only if the command was received.
         return response == f':{str(self._address):02d}ok\r\n'.encode()
