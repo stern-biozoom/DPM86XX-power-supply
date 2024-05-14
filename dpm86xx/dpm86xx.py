@@ -329,7 +329,7 @@ class DPM86XX:
         # The device always responses with b':01ok\r\n'. This does only mean the device received
         # a command-like byte string, disregarding its actual content. Thus, we cannot tell if the
         # command was successful, but only if the command was received.
-        return response == b':01ok\r\n'
+        return response == f':{self._address:02d}ok\r\n'.encode()
 
     def set_voltage(self, voltage: float) -> bool:
         """
@@ -359,7 +359,7 @@ class DPM86XX:
         # The device always responses with b':01ok\r\n'. This does only mean the device received
         # a command-like byte string, disregarding its actual content. Thus, we cannot tell if the
         # command was successful, but only if the command was received.
-        return response == b':01ok\r\n'
+        return response == f':{self._address:02d}ok\r\n'.encode()
 
     def get_voltage_in_centivolts(self) -> int:
         """
@@ -491,7 +491,7 @@ class DPM86XX:
         # The device always responses with b':01ok\r\n'. This does only mean the device received
         # a command-like byte string, disregarding its actual content. Thus, we cannot tell if the
         # command was successful, but only if the command was received.
-        return response == b':01ok\r\n'
+        return response == f':{self._address:02d}ok\r\n'.encode()
 
     def get_output_status(self) -> bool:
         """
@@ -571,7 +571,7 @@ class DPM86XX:
         # The device always responses with b':01ok\r\n'. This does only mean the device received
         # a command-like byte string, disregarding its actual content. Thus, we cannot tell if the
         # command was successful, but only if the command was received.
-        return response == b':01ok\r\n'
+        return response == f':{self._address:02d}ok\r\n'.encode()
 
     def set_current(self, current: float) -> bool:
         """
@@ -684,7 +684,7 @@ class DPM86XX:
         # The device always responses with b':01ok\r\n'. This does only mean the device received
         # a command-like byte string, disregarding its actual content. Thus, we cannot tell if the
         # command was successful, but only if the command was received.
-        return response == b':01ok\r\n'
+        return response == f':{str(self._address):02d}ok\r\n'.encode()
 
     def get_actual_current_in_milliamperes(self) -> int:
         """
